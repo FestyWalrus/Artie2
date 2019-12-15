@@ -2,15 +2,12 @@ import discord
 from discord.ext import commands
 from os import walk
 
-#extensions = ["commandsets.timedate"]
+bot = commands.Bot(command_prefix='a.', description="A bot you can talk to..just say \"Artie\" so they know you're talking to them :)") #define the bot
 
-extensions = []
+tokenFile = open("token.txt", "r+") #read or create the bot token file
 
-
-
-bot = commands.Bot(command_prefix='a.', description="idk lul")
-
-def load_extensions(firstLoad):
+def load_extensions(firstLoad): #loads extensions in the commandsets directory
+	extensions = []
 
 	if firstLoad:
 		print("Loading extensions...")
@@ -18,66 +15,33 @@ def load_extensions(firstLoad):
 		print("Reloading extensions...")
 
 	for (dirpath, dirnames, filenames) in walk("commandsets"):
-		extensions.extend(filenames)
+		extensions.extend(filenames) #add every file in commandsets directory to extensions list
 		break
 
-	for commandName in range(len(extensions)):
-		extensionPosition = extensions[commandName].find(".py")
+	for cmdNameIndex in range(len(extensions)):
+		extensionPosition = extensions[cmdNameIndex].find(".py")
 		if extensionPosition == -1:
-			del extensions[commandName]
+			del extensions[cmdNameIndex] #delete any file from extensions list that isn't an extension
 		else:
-			extensions[commandName] = extensions[commandName].split(".py", 1)[0]
-			
+			extensions[cmdNameIndex] = extensions[cmdNameIndex].split(".py", 1)[0]
 			try:
-				bot.load_extension("commandsets." + extensions[commandName])
-				print("Loaded " + extensions[commandName])
+				bot.load_extension("commandsets." + extensions[cmdNameIndex]) #try to load extension
+				print("   Loaded " + extensions[cmdNameIndex])
 			except Exception as e:
-				print("Failed to load extension " + extensions[commandName] + ": ", end="")
+				print("   Failed to load extension " + extensions[cmdNameIndex] + ": ", end="") #print error if an extension won't load
 				print(e)
 
-@commands.command(#broken
-	name='reload',
-	description='reloads extensions',
-	aliases=[]
-	)
-
-async def reload_command(ctx):#broken
-	load_extensions(False)
-
 @bot.event
-async def on_ready():
-	print("logged in")
+async def on_ready(): #when bot is connected...
+	print("Logged into Discord")
+	tokenFile.close()
 	load_extensions(True)
-	'''while(True):
-		debugCommand = input("ArtieDebugConsole>")
-		if debugCommand == "reload":
-			load_extensions(False)'''
-	
+	print("All set :3")
 
-bot.run('NTMxMTMyNDUwMzQxMTI2MTY0.Xef9uQ.sJbdMebJgmFlO7e8ROsFP6rNfRU')
+print("Artie 2: the Discord bot you can talk to.")
 
-
-
-
-'''class ArtieClient(discord.Client):
-	async def on_message(self, message):
-		#ignore messages from the bot
-		if message.author == self.user:
-			return
-
-		#await message.channel.send(message.content)
-
-artie = ArtieClient()
-	
-if __name__ == '__main__':
-	for extension in extensions:
-		try:
-			bot.load_extension(extension)
-		except Exception as e:
-			print("Failed to load extension.")
-			print(e)
-'''
-
-
-
-
+try:
+	bot.run(tokenFile.read().strip()) #read the token from the token.txt file and try to connect
+except Exception as e:
+	print("Failed to connect to Discord: ", end="") #print error if bot cannot connect
+	print(e)
