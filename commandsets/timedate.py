@@ -23,3 +23,4 @@ class TimeDate(commands.Cog):
 
 def setup(bot):
 	bot.add_cog(TimeDate(bot))
+

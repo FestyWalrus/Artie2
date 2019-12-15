@@ -24,6 +24,7 @@ class Template(commands.Cog): #change this to match the command name
 
 		if message.content.find(requiredTrigger) != -1: #if the trigger (bot's name) is found, process command triggers
 			#command checks and code go here
+			return
 
 def setup(bot):
 	bot.add_cog(Template(bot)) #remember to change this to the name of the command class above
